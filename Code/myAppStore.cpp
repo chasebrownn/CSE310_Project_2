@@ -343,6 +343,9 @@ int main(int argc, char** args) //int argc, char** args
 		string line;
 		string find_this;
 		string app;
+
+		string no = "no";
+		string report = "report";
 			
 		for (int i = 0; i < f; i++) //Iterate f times and grab the find function line
 		{
@@ -350,6 +353,12 @@ int main(int argc, char** args) //int argc, char** args
 			//find_this = line.substr(14); //find category
 
 			cin >> line;
+
+			if (line == no || line == report || line == "")
+			{
+				break;
+			}
+
 			cin >> find_this;
 			getline(cin, app);
 			app = app.substr(1);
@@ -358,6 +367,7 @@ int main(int argc, char** args) //int argc, char** args
 
 		}
 
+		break;
 	}
 
 }
