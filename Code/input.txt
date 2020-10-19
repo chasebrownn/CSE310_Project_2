@@ -2,7 +2,13 @@
 Games
 Medical
 Social Networking
-4
+5
+Medical
+iFit
+0.40.2
+4.2
+MB
+0.00
 Games
 Minecraft: Pocket Edition
 0.12.1
@@ -27,8 +33,11 @@ Game of Life Classic Edition
 15.3
 MB
 0.99
-4
+7
 find app Minecraft: Pocket Edition
 find app FIFA 18
 find app Game of Life Classic Edition
+find category Games
+find category Politics
+find price free
 report

@@ -164,7 +164,66 @@ void find_app(string application, hash_table** hash, int hash_size) // find app 
 		}
 	}
 
-	cout << endl << "Application " << application << " not found." << endl << endl;	
+	cout << "Application " << application << " not found." << endl << endl;	
+}
+
+void find_category(string category, hash_table** hash, int hash_size) // find category functin: Iterates through the hash table and finds matching category
+{
+	bool found = false;
+
+	for (int i = 0; i < hash_size; i++)
+	{
+		hash_table* temp = (hash[i]);
+
+		while (temp != NULL)
+		{
+			if (temp->app_node != NULL && strcmp(temp->app_node->record.category, category.c_str()) == 0)
+			{
+				if (found == false)
+				{
+					cout << "Apps found in Category: " << category << endl;
+					found = true;
+				}
+
+				cout << "\t" << temp->app_node->record.app_name << endl;
+			}
+			temp = temp->next;
+		}
+	}
+	if (found == false)
+	{
+		cout << "Category " << category << " no apps found." << endl << endl;
+	}
+	else
+	{
+		cout << endl;
+	}
+}
+
+void price_free(hash_table** hash, int hash_size)
+{
+	bool found = false;
+
+	for (int i = 0; i < hash_size; i++)
+	{
+		hash_table* temp = (hash[i]);
+
+		while (temp != NULL)
+		{
+			if (temp->app_node != NULL && temp->app_node->record.price == 0.00)
+			{
+				if (found == false)
+				{
+					cout << "Free Applications in Category: " << temp->app_node->record.category << endl;
+					found = true;
+				}
+
+				cout << "\t" << temp->app_node->record.app_name << endl;
+
+			}
+			temp = temp->next;
+		}
+	}
 }
 
 void print_hash(hash_table** hash, int hash_size) // Iterates through each hash table position and if not NULL, print contents
@@ -288,18 +347,18 @@ int main(int argc, char** args) //int argc, char** args
 		m = stoi(get_number_of_apps);
 		//cout << m << endl;
 
-		int prime_this = 0;
+		int hash_size = 0;
 		
-		prime_this = 2 * m;
+		hash_size = 2 * m;
 		
-		while (!TestForPrime(prime_this)) // Finding k
+		while (!TestForPrime(hash_size)) // Finding k
 		{
-			prime_this++;
+			hash_size++;
 		}
 
-		hash_table** hash = new hash_table*[prime_this];
+		hash_table** hash = new hash_table*[hash_size];
 
-		for (int i = 0; i < prime_this; i++)
+		for (int i = 0; i < hash_size; i++)
 		{
 			hash[i] = new hash_table();
 			hash[i]->app_node = NULL;
@@ -320,7 +379,7 @@ int main(int argc, char** args) //int argc, char** args
 					{
 
 						insert_node(cat[i].root, temp_struct); //insert node with app_info and root
-						position = hash_function(prime_this, temp_struct.app_name); // 3. Add each application to the hash table at position x mod k
+						position = hash_function(hash_size, temp_struct.app_name); // 3. Add each application to the hash table at position x mod k
 						insert_hash(position, hash, temp_struct.app_name, fetch_node(temp_struct.app_name, cat[i].root));
 
 						break;
@@ -342,28 +401,63 @@ int main(int argc, char** args) //int argc, char** args
 
 		string line;
 		string find_this;
-		string app;
+		string search_this;
 
 		string no = "no";
 		string report = "report";
+
+		/*
+		*  find app <app_name>
+		*  find category <category_name>
+		*  find price free
+		*  range <category_name> price <low> <high>
+		*  range <category_name> app <low> <high>
+		*  delete <category_name> <app_name>
+		*/
 			
 		for (int i = 0; i < f; i++) //Iterate f times and grab the find function line
 		{
-			//getline(cin, line);
-			//find_this = line.substr(14); //find category
-
 			cin >> line;
 
 			if (line == no || line == report || line == "")
 			{
 				break;
 			}
+			else if (line == "find")
+			{
+				cin >> find_this;
 
-			cin >> find_this;
-			getline(cin, app);
-			app = app.substr(1);
+				if (find_this == "app") // find app <app_name>
+				{
+					getline(cin, search_this);
+					search_this = search_this.substr(1);
+					find_app(search_this, hash, hash_size);
+				}
+				else if (find_this == "category") // find category <category_name>
+				{
+					getline(cin, search_this);
+					search_this = search_this.substr(1);
+					find_category(search_this, hash, hash_size);
+				}
+				else if (find_this == "price") // find price free
+				{
+					getline(cin, search_this);
+					search_this = search_this.substr(1);
+					price_free(hash, hash_size);
+				}
 
-			find_app(app, hash, prime_this);
+			}
+			else if (line == "range")
+			{
+				// get <category name>
+
+				// if price...
+				// if app ...
+			}
+			else if (line == "delete")
+			{
+				// <category_name> <app_name>
+			}
 
 		}
 
