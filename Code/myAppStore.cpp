@@ -866,6 +866,8 @@ int main(int argc, char** args) //int argc, char** args
 				//cout << "Category: " << delete_from_category << endl;
 				//cout << "App: " << delete_application << endl;
 
+				//Application Minecraft from Category Games successfully deleted.
+					cout << endl << "Application " << delete_application << " from Category " << delete_from_category << " successfully deleted." << endl;
 				//delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
 			
