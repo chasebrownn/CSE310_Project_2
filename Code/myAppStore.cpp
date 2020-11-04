@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <math.h>
 #include <cstring>
@@ -11,6 +11,7 @@
 using namespace std;
 
 struct app_info get_app_info();
+//int height(binary_search_tree* root);
 
 /*
 * Chase Brown
@@ -287,7 +288,7 @@ void app_range_recursive(binary_search_tree* bst, const char* low, const char* h
 
 void range_price(application_categories* cat, int cat_size, string category, float low, float high)
 {
-	binary_search_tree* ptr;
+	binary_search_tree* ptr = NULL;
 	bool found = false;
 
 	for (int i = 0; i < cat_size; i++)
@@ -311,7 +312,7 @@ void range_price(application_categories* cat, int cat_size, string category, flo
 
 void range_app(application_categories* cat, int cat_size, string category, const char* low, const char* high)
 {
-	binary_search_tree* ptr;
+	binary_search_tree* ptr = NULL;
 	bool found = false;
 
 	for (int i = 0; i < cat_size; i++)
@@ -337,52 +338,65 @@ void range_app(application_categories* cat, int cat_size, string category, const
 *  Not Found: Application <app name> not found in category <category name>; unable to delete. 
 */
 
-void delete_node(tree* root, string name) {
-
+void delete_node(tree* root, string name)
+{
 	if (root == nullptr)
+	{
 		return;
+	}
 
 	tree* parent = new tree();
 	char child; //will help us in remembering if root is the right or left son of his parent
 
-	while (root->record.app_name != name) { //first, finding root and remembering who's root parent
-		if (root->record.app_name < name) {
+	while (root->record.app_name != name) //first, finding root and remembering who's root parent
+	{ 
+		if (root->record.app_name < name)
+		{
 			parent = root;
 			root = root->left;
 			child = 'l';
 		}
-		else {
+		else
+		{
 			parent = root;
 			root = root->right;
 			child = 'r';
 		}
 	}
 	// now you have both the root node, and its parent
-	if ((root->right == nullptr) && (root->left == nullptr)) { //case 1, if it's a leaf
+	if ((root->right == nullptr) && (root->left == nullptr)) // Case 1: Leaf
+	{
 		delete(root);
 		return;
 	}
-	else if (root->left == nullptr) { //case 2
-		if (child == 'l') {
+	else if (root->left == nullptr)
+	{
+		if (child == 'l')
+		{
 			parent->left = root->right;
 		}
-		else {
+		else
+		{
 			parent->right = root->right;
 		}
 
 	}
-	else { //case 3 : here i get the "rightest" son of root's left son
+	else
+	{
 		tree* replace = root->left;
 
-		while (replace->right != nullptr) {
+		while (replace->right != nullptr)
+		{
 			replace = replace->right;
 		} //now replacement is a leaf, and can replace root
-		if (child == 'l') {
+		if (child == 'l')
+		{
 			parent->left = replace;
 			replace->left = root->left;
 			replace->right = root->right;
 		}
-		else {
+		else
+		{
 			parent->right = replace;
 			replace->left = root->left;
 			replace->right = root->right;
@@ -415,7 +429,7 @@ void delete_app(hash_table** hash, application_categories* cat, int hash_size, s
 	*  Not Found: Application <app name> not found in category <category name>; unable to delete. 
 	*/
 
-	cout << hash_size << endl;
+	//cout << hash_size << endl;
 	
 	for (int i = 0; i < hash_size; i++)
 	{
@@ -458,18 +472,76 @@ void print_hash(hash_table** hash, int hash_size) // Iterates through each hash 
 	}
 }
 
+int height(binary_search_tree* root) // Calculates the height of given bst
+{
+	int h = 0;
+	if (root != NULL)
+	{
+		int lHeight = height(root->left);
+		int rHeight = height(root->right);
+		int maxHeight = max(lHeight, rHeight);
+		h = maxHeight + 1;
+	}
+	return h;
+}
+
+int getCount(binary_search_tree* root) // Calculates the number of nodes in bst
+{
+	if (root == NULL)
+	{
+		return 0;
+	}		
+	return 1 + getCount(root->left) + getCount(root->right);
+}
+
+void report_bst(hash_table** hash, int hash_size, application_categories* cat, int n)
+{
+	/*  For the BST: Print the category name, a count of the total
+		number of nodes in the tree, the height of the tree, the height of the root node’s left subtree, and the height
+		of the root node’s right subtree.
+	*/
+
+	int height_of_bst;
+	int num_of_nodes;
+	int height_left;
+	int height_right;
+
+	cout << endl << "[Binary Search Tree]:" << endl;
+
+	for (int i = 0; i < n; i++)
+	{
+		//tree* pointer = (cat[i].root);
+
+		num_of_nodes = getCount(cat[i].root); // Gets the number of nodes in category[i]
+		height_of_bst = height(cat[i].root); // Gets the height of category[i]'s bst
+		height_left = height(cat[i].root->left); // Calling the height of category[i]'s left subtree
+		height_right = height(cat[i].root->right); // Calling the height of category[i]'s right subtree
+
+		cout << endl << "Category: " << cat[i].category_name << endl;
+		cout << "Number of nodes: " << num_of_nodes << endl;
+		cout << "Height of bst: " << height_of_bst << endl;
+		cout << "Height of left subtree: " << height_left << endl;
+		cout << "Height of right subtree: " << height_right << endl;
+	}
+}
+
 void report_hash(hash_table** hash, int hash_size)
 {
-	int chain_count;
-	int counter;
-	int max_counter;
+	/*  For the hash table: Print a table that lists for each chain length `, 0 ≤ ` ≤ `max, the number of chains
+		of length `, up to the maximum chain length `max that your hash table contains. In addition, compute and
+		print the load factor α for the hash table, giving n and m.
+	*/
+
+	int chain_count = 0;
+	int counter = 0;
+	int max_counter = 0;
 
 	cout << endl << "[Hash Table]:" << endl;
-	cout << "----" << endl;
+	cout << "----" << endl; // Top of hash table diagram
 
-	for (int i = 0; i < hash_size; i++)
+	for (int i = 0; i < hash_size; i++) // For loop iterates through the hash table from top to bottom
 	{
-		hash_table* temp = (hash[i]);
+		hash_table* temp = (hash[i]); // Pointer for this hash position to check through chaining
 
 		counter = 0;
 
@@ -477,14 +549,14 @@ void report_hash(hash_table** hash, int hash_size)
 		{
 			cout << " " << i << " |";
 		}
-		while (temp != NULL)
+		while (temp != NULL) //  While loop to iterate through the seperate chains
 		{
-			if (temp->app_node != NULL)
+			if (temp->app_node != NULL) // If node is not null...
 			{
 				cout << " --> " << temp->app_name;
 				if (temp->next == NULL)
 				{
-					cout << endl << "----" << endl;
+					cout << endl << "----" << endl; // Bottom of hash table diagram
 				}
 				counter++;
 				if (counter > chain_count)
@@ -687,17 +759,18 @@ int main(int argc, char** args) //int argc, char** args
 
 			if (line == no || line == "" || line == report)
 			{
-				if (line == report)
+				if (line == report) // If report is requested...
 				{
 					/*  For the BST: Print the category name, a count of the total
-						number of nodes in the tree, the height of the tree, the height of the root node�s left subtree, and the height
-						of the root node�s right subtree.
+						number of nodes in the tree, the height of the tree, the height of the root node’s left subtree, and the height
+						of the root node’s right subtree.
 
-						For the hash table: Print a table that lists for each chain length `, 0 ? ` ? `max, the number of chains
+						For the hash table: Print a table that lists for each chain length `, 0 ≤ ` ≤ `max, the number of chains
 						of length `, up to the maximum chain length `max that your hash table contains. In addition, compute and
-						print the load factor ? for the hash table, giving n and m.
+						print the load factor α for the hash table, giving n and m.
 					*/
 
+					report_bst(hash, hash_size, cat, n);
 					report_hash(hash, hash_size);
 					cout << "Number of Categories (n): " << n << endl;
 					cout << "Number of Apps (m): " << m << endl;
@@ -793,7 +866,7 @@ int main(int argc, char** args) //int argc, char** args
 				//cout << "Category: " << delete_from_category << endl;
 				//cout << "App: " << delete_application << endl;
 
-				delete_app(hash, cat, hash_size, delete_from_category, delete_application);
+				//delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
 			
 		}
