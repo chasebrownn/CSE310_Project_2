@@ -346,7 +346,7 @@ void delete_node(tree* root, string name)
 	}
 
 	tree* parent = new tree();
-	char child; //will help us in remembering if root is the right or left son of his parent
+	char child = 'l'; //will help us in remembering if root is the right or left son of his parent
 
 	while (root->record.app_name != name) //first, finding root and remembering who's root parent
 	{ 
