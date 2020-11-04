@@ -267,6 +267,17 @@ void price_range_recursive(binary_search_tree* bst, float low, float high)
 		}
 		price_range_recursive(bst->right, low, high);		
 	}
+
+	/*
+	if (bst != NULL)
+	{
+		price_range_recursive(bst->left, low, high);
+		if (bst->record.price >= low && bst->record.price <= high)
+		{
+			cout << "\t" << bst->record.app_name << endl;
+		}
+		price_range_recursive(bst->right, low, high);
+	}*/
 }
 
 void app_range_recursive(binary_search_tree* bst, const char* low, const char* high)
@@ -328,7 +339,6 @@ void range_app(application_categories* cat, int cat_size, string category, const
 	{
 		cout << endl << "No applications found in " << category << " for the given price range (" << low << ", " << high << ")" << endl;
 	}
-
 }
 
 /* Found: Application <app name> from Category <category name> successfully deleted.
@@ -489,7 +499,7 @@ int main(int argc, char** args) //int argc, char** args
 			hash_size++;
 		}
 
-		hash_table** hash = new hash_table*[hash_size];
+		hash_table** hash = new hash_table*[hash_size]; // New hash table of size hash_size
 
 		for (int i = 0; i < hash_size; i++)
 		{
@@ -567,10 +577,7 @@ int main(int argc, char** args) //int argc, char** args
 				if (find_this == "app") // find app <app_name>
 				{
 					getline(cin, search_this);
-					//cout << search_this << endl;
-					//cout << "SIZE: " << search_this.size() << endl;
-					search_this = search_this.substr(2,(search_this.size() - 3));
-					//cout << search_this << endl;
+					search_this = search_this.substr(2,(search_this.size() - 3)); // Take the substring to get rid of unnecessary spaces of quotations
 					find_app(search_this, hash, hash_size);
 				}
 				else if (find_this == "category") // find category <category_name>
@@ -594,7 +601,7 @@ int main(int argc, char** args) //int argc, char** args
 				category = "";
 				cin >> tmp;
 
-				while (tmp != "app" && tmp != "price") //Test with category social networking or another multi-word string of category 
+				while (tmp != "app" && tmp != "price") // [Note]: Test with category social networking or another multi-word string of category 
 				{
 					category += tmp + " ";
 					cin >> tmp;
@@ -626,7 +633,7 @@ int main(int argc, char** args) //int argc, char** args
 				string delete_application;
 				cin >> temporary;
 
-				while (!exists)
+				while (!exists) // Running through the line of test type delete. If the category is found as a match in a previous category, store and move onto application.
 				{
 					delete_from_category += temporary + " ";
 
@@ -644,9 +651,9 @@ int main(int argc, char** args) //int argc, char** args
 					}
 				}
 
-				delete_from_category = delete_from_category.substr(1, delete_from_category.length() - 3);
+				delete_from_category = delete_from_category.substr(1, delete_from_category.length() - 3); // Removing unnecessary spaces and quotations
 				getline (cin, delete_application);
-				delete_application = delete_application.substr(2, delete_application.length() - 3);
+				delete_application = delete_application.substr(2, delete_application.length() - 3); // Removing unnecessary spaces and/or quotations
 
 				cout << "Category: " << delete_from_category << endl;
 				cout << "App: " << delete_application << endl;
