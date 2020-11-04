@@ -2,7 +2,13 @@
 Games
 Medical
 Social Networking
-5
+6
+Social Networking
+Instagram
+0.30.4
+2.4
+GB
+0.00
 Medical
 iFit
 0.40.2
@@ -33,11 +39,15 @@ Game of Life Classic Edition
 15.3
 MB
 0.99
-7
-find app Minecraft: Pocket Edition
-find app FIFA 18
-find app Game of Life Classic Edition
-find category Games
-find category Politics
+11
+find app "Minecraft: Pocket Edition"
+find app "FIFA 18"
+find app "Game of Life Classic Edition"
+find category "Games"
+find category "Politics"
 find price free
+range "Games" app "Ac" "Fc"
+range "Games" price 0.00 5.00
+range "Social Networking" price 0.00 1.00
+delete "Social Networking" "Instagram"
 report

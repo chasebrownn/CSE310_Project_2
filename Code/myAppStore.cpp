@@ -149,14 +149,14 @@ void find_app(string application, hash_table** hash, int hash_size) // find app 
 		{
 			if (temp->app_node != NULL && strcmp(temp->app_node->record.app_name, application.c_str()) == 0)
 			{
-				cout << "Found Application: " << application << endl;
+				cout << endl << "Found Application: " << application << endl;
 
 				cout << "\t" << "Category: " << temp->app_node->record.category << endl;
 				cout << "\t" << "Application Name: " << temp->app_node->record.app_name << endl;
 				cout << "\t" << "Version: " << temp->app_node->record.version << endl;
 				cout << "\t" << "Size: " << temp->app_node->record.size << endl;
 				cout << "\t" << "Units: " << temp->app_node->record.units << endl;
-				cout << "\t" << "Price: " << temp->app_node->record.price << endl << endl;
+				cout << "\t" << "Price: " << temp->app_node->record.price << endl;
 
 				return;
 			}
@@ -164,7 +164,8 @@ void find_app(string application, hash_table** hash, int hash_size) // find app 
 		}
 	}
 
-	cout << "Application " << application << " not found." << endl << endl;	
+	cout << endl << "Application " << application << " not found." << endl;	
+
 }
 
 void find_category(string category, hash_table** hash, int hash_size) // find category functin: Iterates through the hash table and finds matching category
@@ -181,7 +182,7 @@ void find_category(string category, hash_table** hash, int hash_size) // find ca
 			{
 				if (found == false)
 				{
-					cout << "Apps found in Category: " << category << endl;
+					cout << endl << "Apps found in Category: " << category << endl;
 					found = true;
 				}
 
@@ -192,17 +193,14 @@ void find_category(string category, hash_table** hash, int hash_size) // find ca
 	}
 	if (found == false)
 	{
-		cout << "Category " << category << " no apps found." << endl << endl;
-	}
-	else
-	{
-		cout << endl;
+		cout << endl << "Category " << category << " no apps found." << endl;
 	}
 }
 
-void price_free(hash_table** hash, int hash_size)
+void price_free(hash_table** hash, int hash_size, int categories)
 {
 	bool found = false;
+	string* category_used = new string[categories];
 
 	for (int i = 0; i < hash_size; i++)
 	{
@@ -210,20 +208,156 @@ void price_free(hash_table** hash, int hash_size)
 
 		while (temp != NULL)
 		{
-			if (temp->app_node != NULL && temp->app_node->record.price == 0.00)
+			if (temp->app_node != NULL && temp->app_node->record.price == 0.00) //If price is free ($0.00) then...
 			{
+				//cout << "\t" << temp->app_node->record.app_name << endl;
+
 				if (found == false)
 				{
-					cout << "Free Applications in Category: " << temp->app_node->record.category << endl;
-					found = true;
+					for (int i = 0; i < categories; i++)
+					{
+						if (category_used[i] == temp->app_node->record.category)
+						{
+							found = true;
+						}						
+					}
 				}
+				
+				if (found == true)
+				{
+					cout << "\t" << temp->app_node->record.app_name << endl;
+				}
+				else
+				{
+					cout << endl << "Free Applications in Category: " << temp->app_node->record.category << endl;
+					cout << "\t" << temp->app_node->record.app_name << endl;
 
-				cout << "\t" << temp->app_node->record.app_name << endl;
-
+					for (int i = 0; i < categories; i++)
+					{
+						if (category_used[i] == "")
+						{
+							category_used[i] += temp->app_node->record.category;
+							break;
+						}
+					}
+					
+				}
+				found = false;
 			}
 			temp = temp->next;
+		} 
+	}
+
+	/*for (int x = 0; x < categories; x++)
+	{
+		cout << category_used[x] << endl;
+	}*/
+
+	delete[] category_used;
+}
+
+void price_range_recursive(binary_search_tree* bst, float low, float high)
+{
+	if (bst != NULL)
+	{
+		price_range_recursive(bst->left, low, high);
+		if (bst->record.price >= low && bst->record.price <= high)
+		{
+			cout << "\t" << bst->record.app_name << endl;
+		}
+		price_range_recursive(bst->right, low, high);		
+	}
+}
+
+void app_range_recursive(binary_search_tree* bst, const char* low, const char* high)
+{
+	if (bst != NULL)
+	{
+		app_range_recursive(bst->left, low, high);
+		if (strcmp(bst->record.app_name, low) >= 0 && strcmp(high, bst->record.app_name) >= 0)
+		{
+			cout << "\t" << bst->record.app_name << endl;
+		}
+		app_range_recursive(bst->right, low, high);
+	}
+}
+
+void range_price(application_categories* cat, int cat_size, string category, float low, float high)
+{
+	binary_search_tree* ptr;
+	bool found = false;
+
+	for (int i = 0; i < cat_size; i++)
+	{
+		if (cat[i].category_name == category)
+		{
+			ptr = cat[i].root;
+			found = true;
 		}
 	}
+	if (found)
+	{
+		cout << endl << "Applications in Price Range (" << low << ", " << high << ") in Category: " << category << endl;
+		price_range_recursive(ptr, low, high);
+	}
+	else
+	{
+		cout << endl << "No applications found in " << category << " for the given price range (" << low << ", " << high << ")" << endl;
+	}
+}
+
+void range_app(application_categories* cat, int cat_size, string category, const char* low, const char* high)
+{
+	binary_search_tree* ptr;
+	bool found = false;
+
+	for (int i = 0; i < cat_size; i++)
+	{
+		if (cat[i].category_name == category)
+		{
+			ptr = cat[i].root;
+			found = true;
+		}
+	}
+	if (found)
+	{
+		cout << endl << "Applications in Range (" << low << ", " << high << ") in Category: " << category << "." << endl;
+		app_range_recursive(ptr, low, high);
+	}
+	else
+	{
+		cout << endl << "No applications found in " << category << " for the given price range (" << low << ", " << high << ")" << endl;
+	}
+
+}
+
+/* Found: Application <app name> from Category <category name> successfully deleted.
+*  Not Found: Application <app name> not found in category <category name>; unable to delete. 
+*/
+
+void delete_app(hash_table** hash, application_categories* cat, int hash_size, string category, string name)
+{
+	/* First search the hash table for the application with name <app name>.  Then it first deletes the entry from the search tree of the given <category name>, and then
+	*  also deletes the entry from the hash table.  Finally, it prints Application <app name> from Category <category name> successfully deleted.If the application is
+	*  not found it prints Application <app name> not found in category <category name>; unable to delete.substituting the parameters given in the command.
+	* 
+	*  Found: Application <app name> from Category <category name> successfully deleted.
+	*  Not Found: Application <app name> not found in category <category name>; unable to delete. 
+	*/
+	
+	for (int i = 0; i < hash_size; i++)
+	{
+		hash_table* temp = (hash[i]);
+
+		while (temp != NULL)
+		{
+			if (temp->app_name == name)
+			{
+				
+			}
+		}
+	}
+
 }
 
 void print_hash(hash_table** hash, int hash_size) // Iterates through each hash table position and if not NULL, print contents
@@ -347,8 +481,7 @@ int main(int argc, char** args) //int argc, char** args
 		m = stoi(get_number_of_apps);
 		//cout << m << endl;
 
-		int hash_size = 0;
-		
+		int hash_size = 0;		
 		hash_size = 2 * m;
 		
 		while (!TestForPrime(hash_size)) // Finding k
@@ -402,9 +535,13 @@ int main(int argc, char** args) //int argc, char** args
 		string line;
 		string find_this;
 		string search_this;
+		string category;
 
 		string no = "no";
 		string report = "report";
+
+		string app_low, app_high;
+		float price_low, price_high;
 
 		/*
 		*  find app <app_name>
@@ -430,37 +567,97 @@ int main(int argc, char** args) //int argc, char** args
 				if (find_this == "app") // find app <app_name>
 				{
 					getline(cin, search_this);
-					search_this = search_this.substr(1);
+					//cout << search_this << endl;
+					//cout << "SIZE: " << search_this.size() << endl;
+					search_this = search_this.substr(2,(search_this.size() - 3));
+					//cout << search_this << endl;
 					find_app(search_this, hash, hash_size);
 				}
 				else if (find_this == "category") // find category <category_name>
 				{
 					getline(cin, search_this);
-					search_this = search_this.substr(1);
+					search_this = search_this.substr(2,(search_this.size() - 3));
 					find_category(search_this, hash, hash_size);
 				}
 				else if (find_this == "price") // find price free
 				{
 					getline(cin, search_this);
 					search_this = search_this.substr(1);
-					price_free(hash, hash_size);
+					price_free(hash, hash_size, n);
 				}
 
 			}
-			else if (line == "range")
+			else if (line == "range") // range <category name> price <low> <high> ---or---  range <category name> app <low> <high>
 			{
 				// get <category name>
+				string tmp;
+				category = "";
+				cin >> tmp;
 
-				// if price...
-				// if app ...
+				while (tmp != "app" && tmp != "price") //Test with category social networking or another multi-word string of category 
+				{
+					category += tmp + " ";
+					cin >> tmp;
+				}
+				category = category.substr(1, category.length() - 3);
+				if (tmp == "price")
+				{
+					cin >> price_low;
+					cin >> price_high;
+					range_price(cat, n, category, price_low, price_high);
+				}
+				else
+				{
+					cin >> app_low;
+					app_low = app_low.substr(1, app_low.length() - 2);
+					cin >> app_high;
+					app_high = app_high.substr(1, app_high.length() - 2);
+					range_app(cat, n, category, app_low.c_str(), app_high.c_str());
+				}
+
 			}
 			else if (line == "delete")
 			{
 				// <category_name> <app_name>
+
+				bool exists = false;
+				string temporary;
+				string delete_from_category = "";
+				string delete_application;
+				cin >> temporary;
+
+				while (!exists)
+				{
+					delete_from_category += temporary + " ";
+
+					for (int i = 0; i < n; i++)
+					{
+						if (cat[i].category_name == delete_from_category.substr(1, delete_from_category.length() - 3))
+						{
+							exists = true;
+							break;
+						}
+					}
+					if (!exists)
+					{
+						cin >> temporary;
+					}
+				}
+
+				delete_from_category = delete_from_category.substr(1, delete_from_category.length() - 3);
+				getline (cin, delete_application);
+				delete_application = delete_application.substr(2, delete_application.length() - 3);
+
+				cout << "Category: " << delete_from_category << endl;
+				cout << "App: " << delete_application << endl;
+
+				//delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
 
 		}
 
+		delete[] cat;
+		delete[] hash;
 		break;
 	}
 
