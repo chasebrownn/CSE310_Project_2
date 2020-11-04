@@ -49,5 +49,5 @@ find price free
 range "Games" app "Ac" "Fc"
 range "Games" price 0.00 5.00
 range "Social Networking" price 0.00 1.00
-delete "Social Networking" "Instagram"
+delete "Games" "Minecraft: Pocket Edition"
 report

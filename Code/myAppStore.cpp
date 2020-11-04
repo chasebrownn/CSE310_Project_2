@@ -197,9 +197,11 @@ void find_category(string category, hash_table** hash, int hash_size) // find ca
 	}
 }
 
-void price_free(hash_table** hash, int hash_size, int categories)
+void price_free(hash_table** hash, int hash_size, int categories) // Iterates through the hash and prints any free applications
 {
 	bool found = false;
+
+	// I use an array to store any category that has previously been printed to contain a free application so we don't print a category more than once
 	string* category_used = new string[categories];
 
 	for (int i = 0; i < hash_size; i++)
@@ -218,16 +220,18 @@ void price_free(hash_table** hash, int hash_size, int categories)
 					{
 						if (category_used[i] == temp->app_node->record.category)
 						{
+							// If there exists a category in the array that has already been printed to contain a free app, found = true
+
 							found = true;
 						}						
 					}
 				}
 				
-				if (found == true)
+				if (found == true) // When there is a free app in a category that's already been printed to contain another free app we just print this app
 				{
 					cout << "\t" << temp->app_node->record.app_name << endl;
 				}
-				else
+				else // Otherwise we print the category along with the app, and add the category to the "category_used" array
 				{
 					cout << endl << "Free Applications in Category: " << temp->app_node->record.category << endl;
 					cout << "\t" << temp->app_node->record.app_name << endl;
@@ -256,7 +260,7 @@ void price_free(hash_table** hash, int hash_size, int categories)
 	delete[] category_used;
 }
 
-void price_range_recursive(binary_search_tree* bst, float low, float high)
+void price_range_recursive(binary_search_tree* bst, float low, float high) // Does an in-order recursive traversal to print any apps in the price range
 {
 	if (bst != NULL)
 	{
@@ -267,20 +271,9 @@ void price_range_recursive(binary_search_tree* bst, float low, float high)
 		}
 		price_range_recursive(bst->right, low, high);		
 	}
-
-	/*
-	if (bst != NULL)
-	{
-		price_range_recursive(bst->left, low, high);
-		if (bst->record.price >= low && bst->record.price <= high)
-		{
-			cout << "\t" << bst->record.app_name << endl;
-		}
-		price_range_recursive(bst->right, low, high);
-	}*/
 }
 
-void app_range_recursive(binary_search_tree* bst, const char* low, const char* high)
+void app_range_recursive(binary_search_tree* bst, const char* low, const char* high) // Does an in-order recursive traversal to print any apps in the app alphabetic/ASCII range
 {
 	if (bst != NULL)
 	{
@@ -354,6 +347,8 @@ void delete_app(hash_table** hash, application_categories* cat, int hash_size, s
 	*  Found: Application <app name> from Category <category name> successfully deleted.
 	*  Not Found: Application <app name> not found in category <category name>; unable to delete. 
 	*/
+
+	cout << hash_size << endl;
 	
 	for (int i = 0; i < hash_size; i++)
 	{
@@ -361,10 +356,14 @@ void delete_app(hash_table** hash, application_categories* cat, int hash_size, s
 
 		while (temp != NULL)
 		{
-			if (temp->app_name == name)
+			//cout << temp->app_name << sizeof(temp->app_name) << endl;
+			//cout << name << " Size: " << name.length() << endl;
+
+			if (strcmp(temp->app_name, name.c_str())==0)
 			{
-				
+				cout << "Found application: " << name << endl;
 			}
+			temp = temp->next;
 		}
 	}
 
@@ -389,7 +388,7 @@ void print_hash(hash_table** hash, int hash_size) // Iterates through each hash 
 	}
 }
 
-void insert_hash(int position, hash_table** hash, char* app_name, tree* app_node)
+void insert_hash(int position, hash_table** hash, char* app_name, tree* app_node) // Inserts app into the hash table
 {
 	hash_table* temp = (hash[position]);
 
@@ -411,6 +410,8 @@ void insert_hash(int position, hash_table** hash, char* app_name, tree* app_node
 	{
 		hash[position] = newEntry;
 	}
+
+	//delete[] newEntry;
 }
 
 tree* fetch_node(char* app_name, tree* root)
@@ -532,7 +533,7 @@ int main(int argc, char** args) //int argc, char** args
 
 			}
 
-			//print_hash(hash, prime_this);
+			print_hash(hash, hash_size);
 
 		} // End of m
 
@@ -623,10 +624,8 @@ int main(int argc, char** args) //int argc, char** args
 				}
 
 			}
-			else if (line == "delete")
+			else if (line == "delete") // delete <category> <application>
 			{
-				// <category_name> <app_name>
-
 				bool exists = false;
 				string temporary;
 				string delete_from_category = "";
@@ -658,7 +657,7 @@ int main(int argc, char** args) //int argc, char** args
 				cout << "Category: " << delete_from_category << endl;
 				cout << "App: " << delete_application << endl;
 
-				//delete_app(hash, cat, hash_size, delete_from_category, delete_application);
+				delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
 
 		}
