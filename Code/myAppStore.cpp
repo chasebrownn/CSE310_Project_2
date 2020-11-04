@@ -165,7 +165,6 @@ void find_app(string application, hash_table** hash, int hash_size) // find app 
 	}
 
 	cout << endl << "Application " << application << " not found." << endl;	
-
 }
 
 void find_category(string category, hash_table** hash, int hash_size) // find category functin: Iterates through the hash table and finds matching category
@@ -338,6 +337,74 @@ void range_app(application_categories* cat, int cat_size, string category, const
 *  Not Found: Application <app name> not found in category <category name>; unable to delete. 
 */
 
+void delete_node(tree* root, string name) {
+
+	if (root == nullptr)
+		return;
+
+	tree* parent = new tree();
+	char child; //will help us in remembering if root is the right or left son of his parent
+
+	while (root->record.app_name != name) { //first, finding root and remembering who's root parent
+		if (root->record.app_name < name) {
+			parent = root;
+			root = root->left;
+			child = 'l';
+		}
+		else {
+			parent = root;
+			root = root->right;
+			child = 'r';
+		}
+	}
+	// now you have both the root node, and its parent
+	if ((root->right == nullptr) && (root->left == nullptr)) { //case 1, if it's a leaf
+		delete(root);
+		return;
+	}
+	else if (root->left == nullptr) { //case 2
+		if (child == 'l') {
+			parent->left = root->right;
+		}
+		else {
+			parent->right = root->right;
+		}
+
+	}
+	else { //case 3 : here i get the "rightest" son of root's left son
+		tree* replace = root->left;
+
+		while (replace->right != nullptr) {
+			replace = replace->right;
+		} //now replacement is a leaf, and can replace root
+		if (child == 'l') {
+			parent->left = replace;
+			replace->left = root->left;
+			replace->right = root->right;
+		}
+		else {
+			parent->right = replace;
+			replace->left = root->left;
+			replace->right = root->right;
+		}
+	}
+	delete (root);
+}
+
+/*
+struct tree delete_from_bst(binary_search_tree* root, string name)
+{
+	binary_search_tree* node_pointer;
+
+	if (node_pointer == NULL)
+		return root;
+	else if (strcmp(node_pointer->record.app_name, name.c_str()) > 0)
+		root->left = delete_from_bst(root->left, name);
+	else if (strcmp(node_pointer->record.app_name, name.c_str()) < 0)
+		root->right = delete_from_bst(root->right, name);
+
+}*/
+
 void delete_app(hash_table** hash, application_categories* cat, int hash_size, string category, string name)
 {
 	/* First search the hash table for the application with name <app name>.  Then it first deletes the entry from the search tree of the given <category name>, and then
@@ -356,12 +423,15 @@ void delete_app(hash_table** hash, application_categories* cat, int hash_size, s
 
 		while (temp != NULL)
 		{
-			//cout << temp->app_name << sizeof(temp->app_name) << endl;
-			//cout << name << " Size: " << name.length() << endl;
-
-			if (strcmp(temp->app_name, name.c_str())==0)
+			if (strcmp(temp->app_name, name.c_str()) == 0) // App found, delete from bst then delete from hash table
 			{
 				cout << "Found application: " << name << endl;
+
+				//Delete from bst
+
+				delete_node(temp->app_node, name);
+
+				//free(temp);
 			}
 			temp = temp->next;
 		}
@@ -533,7 +603,7 @@ int main(int argc, char** args) //int argc, char** args
 
 			}
 
-			print_hash(hash, hash_size);
+			//print_hash(hash, hash_size);
 
 		} // End of m
 
@@ -654,8 +724,8 @@ int main(int argc, char** args) //int argc, char** args
 				getline (cin, delete_application);
 				delete_application = delete_application.substr(2, delete_application.length() - 3); // Removing unnecessary spaces and/or quotations
 
-				cout << "Category: " << delete_from_category << endl;
-				cout << "App: " << delete_application << endl;
+				//cout << "Category: " << delete_from_category << endl;
+				//cout << "App: " << delete_application << endl;
 
 				delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
