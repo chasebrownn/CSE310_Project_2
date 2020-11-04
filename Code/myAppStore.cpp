@@ -458,6 +458,54 @@ void print_hash(hash_table** hash, int hash_size) // Iterates through each hash 
 	}
 }
 
+void report_hash(hash_table** hash, int hash_size)
+{
+	int chain_count;
+	int counter;
+	int max_counter;
+
+	cout << endl << "[Hash Table]:" << endl;
+	cout << "----" << endl;
+
+	for (int i = 0; i < hash_size; i++)
+	{
+		hash_table* temp = (hash[i]);
+
+		counter = 0;
+
+		if (temp->app_node != NULL)
+		{
+			cout << " " << i << " |";
+		}
+		while (temp != NULL)
+		{
+			if (temp->app_node != NULL)
+			{
+				cout << " --> " << temp->app_name;
+				if (temp->next == NULL)
+				{
+					cout << endl << "----" << endl;
+				}
+				counter++;
+				if (counter > chain_count)
+				{
+					chain_count = counter;
+					max_counter = 1;
+				}
+				else if (counter == chain_count)
+				{
+					max_counter++;
+				}
+			
+			}
+			temp = temp->next;
+		}
+		
+	}
+	cout << "Max number of chains: " << chain_count << endl;
+	cout << "Number of max chains: " << max_counter << endl;
+}
+
 void insert_hash(int position, hash_table** hash, char* app_name, tree* app_node) // Inserts app into the hash table
 {
 	hash_table* temp = (hash[position]);
@@ -637,9 +685,27 @@ int main(int argc, char** args) //int argc, char** args
 		{
 			cin >> line;
 
-			if (line == no || line == report || line == "")
+			if (line == no || line == "" || line == report)
 			{
-				break;
+				if (line == report)
+				{
+					/*  For the BST: Print the category name, a count of the total
+						number of nodes in the tree, the height of the tree, the height of the root node’s left subtree, and the height
+						of the root node’s right subtree.
+
+						For the hash table: Print a table that lists for each chain length `, 0 ? ` ? `max, the number of chains
+						of length `, up to the maximum chain length `max that your hash table contains. In addition, compute and
+						print the load factor ? for the hash table, giving n and m.
+					*/
+
+					report_hash(hash, hash_size);
+					cout << "Number of Categories (n): " << n << endl;
+					cout << "Number of Apps (m): " << m << endl;
+				}
+				else
+				{
+					break;
+				}
 			}
 			else if (line == "find")
 			{
@@ -729,7 +795,7 @@ int main(int argc, char** args) //int argc, char** args
 
 				delete_app(hash, cat, hash_size, delete_from_category, delete_application);
 			}
-
+			
 		}
 
 		delete[] cat;

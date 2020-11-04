@@ -1326,7 +1326,7 @@ AccuWeather
 60.3
 MB
 0.00
-18
+19
 find app "Paprika Recipe Manager"
 find app "WatchESPN"
 find app "YouTube Kids"
@@ -1345,4 +1345,4 @@ range "Magazines & Newspapers" app "B" "D"
 range "Reference" app "A" "G"
 find app "Rainbow Loom Pro"
 find app "TED Books"
-no report
+report
